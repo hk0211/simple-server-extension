@@ -1,16 +1,11 @@
 import json
-from logging import getLogger
 
-from notebook.notebookapp import NotebookWebApplication
+from notebook.notebookapp import NotebookWebApplication, NotebookApp
 from notebook.utils import url_path_join
 from notebook.base.handlers import APIHandler
 
-from notebook.notebookapp import NotebookApp
-from jupyterlab_code_formatter.handlers import setup_handlers
-
 from tornado import web
-
-LOGGER = getLogger(__name__)
+from tornado.log import app_log
 
 
 def _jupyter_server_extension_paths():
@@ -46,7 +41,7 @@ class MyAPIHandler(APIHandler):
 
     @web.authenticated
     def get(self) -> None:
-        LOGGER.info('GET request received')
+        app_log.info('GET request received')
         self.finish(
             json.dumps(
                 {
@@ -61,7 +56,7 @@ class MyAPIHandler(APIHandler):
         data = json.loads(self.request.body.decode("utf-8"))
         global DATA
         DATA = data
-        LOGGER.info('data received.')
+        app_log.info('Data received.')
 
         self.finish(
             json.dumps(
