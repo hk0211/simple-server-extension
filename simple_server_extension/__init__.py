@@ -1,4 +1,5 @@
 import json
+from logging import getLogger
 
 from notebook.notebookapp import NotebookWebApplication
 from notebook.utils import url_path_join
@@ -8,6 +9,8 @@ from notebook.notebookapp import NotebookApp
 from jupyterlab_code_formatter.handlers import setup_handlers
 
 from tornado import web
+
+LOGGER = getLogger(__name__)
 
 
 def _jupyter_server_extension_paths():
@@ -38,9 +41,12 @@ DATA = ''
 
 
 class MyAPIHandler(APIHandler):
+    def check_xsrf_cookie(self):
+        pass
 
     @web.authenticated
     def get(self) -> None:
+        LOGGER.info('GET request received')
         self.finish(
             json.dumps(
                 {
@@ -54,7 +60,8 @@ class MyAPIHandler(APIHandler):
     def post(self) -> None:
         data = json.loads(self.request.body.decode("utf-8"))
         global DATA
-        TOKEN = data
+        DATA = data
+        LOGGER.info('data received.')
 
         self.finish(
             json.dumps(
